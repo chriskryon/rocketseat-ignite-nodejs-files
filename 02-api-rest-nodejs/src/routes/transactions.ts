@@ -50,4 +50,14 @@ export async function transactionsRoutes(app: FastifyInstance) {
 		const transaction = await knex("transactions").select("*");
 		return { transaction };
 	});
+
+	app.get("/summary", async () => {
+		const summary = await knex("transactions")
+			.sum("amount", {
+				as: "total",
+			})
+			.first();
+
+		return { summary };
+	});
 }
