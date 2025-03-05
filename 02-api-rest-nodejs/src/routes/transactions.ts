@@ -4,15 +4,16 @@ import { knex } from "../database";
 import { randomUUID } from "node:crypto";
 import { request } from "node:http";
 import { checkSessionIdExists } from "../middlewares/check-session-id-exists";
+import { app } from "../app";
 
 // Cookies <-> formas de manter contexto entre requisições
 
 export async function transactionsRoutes(app: FastifyInstance) {
-	app.post("/create", async (request, response) => {
+	app.post("/", async (request, reply) => {
 		const createTransactionBodySchema = z.object({
 			title: z.string(),
 			amount: z.number(),
-			type: z.string(),
+			type: z.enum(["credit", "debit"]),
 		});
 
 		const { title, amount, type } = createTransactionBodySchema.parse(
@@ -23,21 +24,21 @@ export async function transactionsRoutes(app: FastifyInstance) {
 
 		if (!sessionId) {
 			sessionId = randomUUID();
-			response.cookie("sessionId", sessionId, {
+
+			reply.setCookie("sessionId", sessionId, {
 				path: "/",
-				maxAge: 60 * 60 * 24 * 7, // 7 days
+				maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
 			});
 		}
 
 		await knex("transactions").insert({
 			id: randomUUID(),
-			title: title,
+			title,
 			amount: type === "credit" ? amount : amount * -1,
-			created_at: new Date(),
 			session_id: sessionId,
 		});
 
-		response.status(201).send({ status: "success" });
+		return reply.status(201).send();
 	});
 
 	app.get(

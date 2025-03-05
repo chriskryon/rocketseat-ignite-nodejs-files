@@ -4,7 +4,7 @@ import { z } from "zod";
 const envSchema = z.object({
 	NODE_ENV: z.enum(["development", "test", "production"]).default("production"),
 	DATABASE_URL: z.string(),
-	PORT: z.preprocess((val) => Number(val), z.number().default(3333)),
+	PORT: z.coerce.number().default(3333),
 });
 
 // O parse vai verificar se as variáveis de ambiente estão de acordo com o schema
