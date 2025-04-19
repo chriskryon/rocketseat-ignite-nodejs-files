@@ -1,12 +1,4 @@
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  test,
-} from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { app } from '../app';
 import { exec, execSync } from 'node:child_process';
@@ -103,5 +95,37 @@ describe('Transactions', () => {
         title: 'Nova transação',
       }),
     );
+  });
+
+  it('should be able to get the summary', async () => {
+    const createTransactionResponse = await request(app.server)
+      .post('/transactions')
+      .send({
+        title: 'Nova transação',
+        amount: 55000,
+        type: 'credit',
+      })
+      .expect(201);
+
+    const cookies = createTransactionResponse.get('Set-Cookie');
+
+    await request(app.server)
+      .post('/transactions')
+      .set('Cookie', cookies ?? [])
+      .send({
+        title: 'Nova transação de débito',
+        amount: 50000,
+        type: 'debit',
+      })
+      .expect(201);
+
+    const summaryResponse = await request(app.server)
+      .get('/transactions/summary')
+      .set('Cookie', cookies ?? [])
+      .expect(200);
+
+    console.log('Summary:', summaryResponse.body.summary);
+
+    expect(summaryResponse.body.summary).toEqual({ total: 5000 });
   });
 });
