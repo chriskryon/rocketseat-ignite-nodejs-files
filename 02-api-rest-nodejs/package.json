@@ -5,6 +5,7 @@
 		"@types/supertest": "^6.0.2",
 		"eslint": "^8.57.0",
 		"supertest": "^7.0.0",
+		"tsup": "^8.4.0",
 		"tsx": "^4.19.0",
 		"typescript": "^5.5.4",
 		"vite": "^5.4.2",
@@ -18,7 +19,7 @@
 		"dev": "npx tsx watch src/server.ts",
 		"knex": "node --no-warnings --import tsx ./node_modules/knex/bin/cli.js",
 		"biome": "npx @biomejs/biome lint --write ./src",
-		"build": "tsc",
+		"build": "tsup src --out-dir build",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [],

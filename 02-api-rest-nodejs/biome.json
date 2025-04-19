@@ -9,6 +9,12 @@
 			"recommended": true
 		}
 	}, 
+	"files": {
+		"ignore": [
+			"node_modules",
+			"build"
+		]
+	},
 	"javascript": {
 		"formatter": {
 			"indentStyle": "space",
