@@ -60,8 +60,7 @@ export async function mealsRoutes(app: FastifyInstance) {
           description,
           datetime,
           is_diet: isDiet,
-        })
-        .first();
+        });
 
       if (updatedRows === 0) {
         return reply.status(404).send({ message: 'Meal not found' });
